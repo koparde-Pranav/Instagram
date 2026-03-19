@@ -6,7 +6,7 @@ import CreatePostModal from '../../Components/Post/CreatePostModal'
 import { useDisclosure } from '@chakra-ui/react'
 
 const HomePage = () => {
-
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <div>
       <div className='mt-10 flex w-[100%] justify-center'>
@@ -18,7 +18,7 @@ const HomePage = () => {
             {[1, 1].map((item) => <PostCard></PostCard>)}
           </div>
         </div>
-        <div className='w-[35%] '>
+        <div className='w-[27%] '>
           <HomeRight></HomeRight>
         </div>
       </div>
