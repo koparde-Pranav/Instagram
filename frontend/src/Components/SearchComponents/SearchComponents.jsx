@@ -10,9 +10,9 @@ const SearchComponents = () => {
                 <input className='searchInput' type="text" placeholder="Search..." />
             </div>
 
-            <hr /> 
+            <hr />
             <div className='px-3 pt-5'>
-                {[1,1,1,1,1,1].map((item,index) => <SearchUserCard/>)}
+                {[1, 1, 1, 1, 1, 1].map((item, index) => <SearchUserCard />)}
             </div>
 
         </div>
