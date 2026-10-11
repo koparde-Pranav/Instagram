@@ -1,7 +1,14 @@
-import { Box, FormControl, FormErrorMessage, Input } from '@chakra-ui/react'
+import { Box, Button, FormControl, FormErrorMessage, Input } from '@chakra-ui/react'
 import { Field, Form, Formik } from 'formik'
 import React from 'react'
 import * as Yup from 'yup'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from "react-redux";
+import { signinAction } from '../../Redux/Auth/Action'
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { getUserProfileAction } from '../../Redux/User/Action';
+
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email address").required("Email is required"),
@@ -10,19 +17,39 @@ const validationSchema = Yup.object().shape({
 
 const Signin = () => {
   const initialValues = { email: '', password: '' }
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector(store => store);
+  const jwt = localStorage.getItem("token");
 
-  const handleSubmit = (values) => {
-    console.log('values', values)
+
+  const handleSubmit = (values, actions) => {
+    dispatch(signinAction(values));
+    actions.setSubmitting(false);
   }
+
+  useEffect(() => {
+    if (jwt) {
+      dispatch(getUserProfileAction(jwt))
+    }
+  }, [jwt])
+
+  useEffect(() => {
+    if (user.reqUser?.username) {
+      navigate(`/${user.reqUser.username}`)
+    }
+  }, [jwt, user.reqUser])
+
+  const handleNavigate = () => navigate('/signup')
 
   return (
     <div>
-      <div>
+      <div className='border'>
         <Box p={8} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-          <img src='https://i.imgur.com/zqpwkLQ.png' alt='' />
+          <img className='mb-5' src='https://i.imgur.com/zqpwkLQ.png' alt='' />
           <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validationSchema}>
-            {() => (
-              <Form>
+            {(formikProps) => (
+              <Form className='space-y-8'>
                 <Field name='email'>
                   {({ field, form }) => (
                     <FormControl isInvalid={form.errors.email && form.touched.email}>
@@ -40,14 +67,19 @@ const Signin = () => {
                     </FormControl>
                   )}
                 </Field>
+                <p className='text-center text-sm'>People who use our service may have uploaded your contact information to Instagram. Learn more</p>
+                <p className='text-center text-sm'>By signing in, you agree to our Terms, Privacy Policy and Cookies Policy</p>
+                <Button type='submit' className='w-full' mt={4} colorScheme='blue' isLoading={formikProps.isSubmitting}>Sign in</Button>
               </Form>
             )}
           </Formik>
         </Box>
+      </div>
+      <div className='border w-full border-slate-300 mt-5 '>
+        <p className='text-center py-2 text-sm'>If you don't have an account already <span onClick={handleNavigate} className='ml-2 text-blue-700 cursor-pointer'>Sign up</span></p>
       </div>
     </div>
   )
 }
 
 export default Signin
-

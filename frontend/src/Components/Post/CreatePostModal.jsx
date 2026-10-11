@@ -4,11 +4,19 @@ import { FaPhotoVideo } from 'react-icons/fa'
 import './CreatePostModal.css'
 import { GrEmoji } from 'react-icons/gr'
 import { GoLocation } from 'react-icons/go'
+import { useDispatch } from 'react-redux'
+import { createPostAction } from '../../Redux/Post/Action'
+import { uploadToCloudinary } from '../../Config/UploadToCloudnary'
 
 const CreatePostModal = ({ onClose, isOpen }) => {
     const [isDragOver, setIsDragOver] = React.useState(false);
     const [file, setFile] = React.useState();
     const [caption, setCaption] = React.useState('');
+    const dispatch = useDispatch();
+    const [imageUrl, setImageUrl] = React.useState('');
+    const [location, setLocation] = React.useState('');
+    const token = localStorage.getItem('token');
+
     const handleDragOver = (event) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'copy';
@@ -25,15 +33,29 @@ const CreatePostModal = ({ onClose, isOpen }) => {
         }
     }
 
-    const handleOnChange = (event) => {
+    const handleOnChange = async (event) => {
         const file = event.target.files[0];
+        console.log("File Selected : ", file);
         if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
             setFile(file);
         }
         else {
+            const imgUrl = await uploadToCloudinary(file);
+            setImageUrl(imgUrl);
             setFile(null);
             alert('Please select a valid image or video file');
         }
+    }
+
+    const handleCreatePost = () => {
+        const data = {
+            jwt: token,
+            data: {
+                caption, location, image: imageUrl
+            },
+        }
+        dispatch(createPostAction(data));
+        onClose();
     }
 
     const handleCaptionChange = (e) => {
@@ -46,7 +68,7 @@ const CreatePostModal = ({ onClose, isOpen }) => {
                 <ModalContent>
                     <div className='flex justify-between py-1 px-10 items-center'>
                         <p>Create New Post</p>
-                        <Button className='' variant={'ghost'} size='sm' colorScheme='blue'>Share</Button>
+                        <Button className='' variant={'ghost'} size='sm' colorScheme='blue' onClick={handleCreatePost}>Share</Button>
                     </div>
                     <hr />
                     <ModalBody>
@@ -71,18 +93,18 @@ const CreatePostModal = ({ onClose, isOpen }) => {
                                     <p className='font-semibold ml-4'>username</p>
                                 </div>
                                 <div className='px-2'>
-                                    <textarea className='captionInput' placeholder='Write a caption...' name='caption' rows="8" onChange={handleCaptionChange}></textarea>
+                                    <textarea className='captionInput' placeholder='Write a caption...' name='caption' rows="8" onChange={(e) => setCaption(e.target.value)}></textarea>
                                 </div>
                                 <div className='flex justify-between px-2'>
                                     <GrEmoji />
                                     <p className='opacity-70'>{caption?.length} /2,200</p>
                                 </div>
                                 <hr />
-                                <div className='p-2 flex justify-between items-center'> 
-                                    <input className='locationInput' type="text" placeholder='location' name = 'location' />
-                                    <GoLocation/>
+                                <div className='p-2 flex justify-between items-center'>
+                                    <input onChange={(e) => setLocation(e.target.value)} className='locationInput' type="text" placeholder='location' name='location' />
+                                    <GoLocation />
                                 </div>
-                                <hr/>
+                                <hr />
                             </div>
                         </div>
                     </ModalBody>

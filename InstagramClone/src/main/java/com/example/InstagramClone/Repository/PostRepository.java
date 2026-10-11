@@ -13,7 +13,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("SELECT p FROM Post p WHERE p.user.id =?1")
     public List<Post> findByUserId(Integer userId);
 
-    @Query("SELECT p FROM Post p WHERE p.user.id IN : users ORDER BY p.createdAt DESC")
+    @Query("SELECT p FROM Post p WHERE p.user.id IN :users ORDER BY p.createdAt DESC")
     public List<Post> findAllPostsByUserIds(@Param("users") List<Integer> userIds);
 
 }

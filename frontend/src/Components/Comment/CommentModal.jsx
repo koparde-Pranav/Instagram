@@ -1,7 +1,7 @@
 import { Modal, ModalOverlay, ModalContent, ModalBody } from '@chakra-ui/react'
 import { BsBookmark, BsBookmarkFill, BsThreeDots, BsEmojiSmile } from 'react-icons/bs'
 import { AiFillHeart, AiOutlineHeart as AiOutLineHeart } from 'react-icons/ai'
-import { FaRegComment } from 'react-icons/fa'  
+import { FaRegComment } from 'react-icons/fa'
 import { RiSendPlaneLine } from 'react-icons/ri'
 import CommentCard from './CommentCard'
 import './CommentModal.css'
@@ -31,7 +31,7 @@ const CommentModal = ({ onClose, isOpen, isSaved, isPostLiked, handlePostLike, h
                                 </div>
                                 <hr />
                                 <div className='comment'>
-                                    {[1, 1, 1, 1].map(() => <CommentCard />)}
+                                    {[0, 1, 2, 3].map((index) => <CommentCard key={index} />)}
                                 </div>
 
                                 <div className='absolute bottom-0 w-[90%]'>
