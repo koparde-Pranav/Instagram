@@ -23,15 +23,15 @@ public class UserUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional <com.example.InstagramClone.Modal.User> opt = userRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional <com.example.InstagramClone.Modal.User> opt = userRepository.findByEmail(email);
         if (opt.isPresent()) {
             com.example.InstagramClone.Modal.User user= opt.get();
             List<GrantedAuthority> authorities = new ArrayList<>();
             
             return new User(user.getUsername(), user.getPassword(), authorities);
         }
-        throw new BadCredentialsException("User not found with username: " + username);
+        throw new BadCredentialsException("User not found with email: " + email);
     }
 
 }

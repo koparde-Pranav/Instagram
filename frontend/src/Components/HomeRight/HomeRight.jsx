@@ -20,7 +20,7 @@ const HomeRight = () => {
           </div>
         </div>
         <div className='space-y-5 mt-10'>
-          {[1, 1, 1, 1,].map((item) => <SuggestionCard></SuggestionCard>)}
+          {[0, 1, 2, 3].map((index) => <SuggestionCard key={index}></SuggestionCard>)}
         </div>
       </div>
     </div>
