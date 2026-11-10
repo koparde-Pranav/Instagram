@@ -12,20 +12,21 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import com.example.InstagramClone.Repository.UserRepository;
 import java.util.Arrays;
 
 @Configuration // instead of writing xml we use a java class to configure our application
 public class AppConfig {
 
     @Bean
-    public SecurityFilterChain securityConfiguration(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityConfiguration(HttpSecurity http, UserRepository userRepository) throws Exception {
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/signup").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new JwtTokenGeneratorFilter(userRepository), BasicAuthenticationFilter.class)
                 .addFilterBefore(new JwtTokenValidationFilter(), BasicAuthenticationFilter.class)
                 .cors()
                 .and()

@@ -13,6 +13,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.InstagramClone.Modal.User;
+import com.example.InstagramClone.Repository.UserRepository;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
@@ -20,8 +23,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 public class JwtTokenGeneratorFilter extends OncePerRequestFilter {
+
+    private final UserRepository userRepository;
+
+    public JwtTokenGeneratorFilter(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -30,6 +38,8 @@ public class JwtTokenGeneratorFilter extends OncePerRequestFilter {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null) {
+            User user = userRepository.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new IllegalStateException("Authenticated user was not found"));
             SecretKey key = Keys.hmacShaKeyFor(SecurityContext.JWT_KEY.getBytes());
 
             String jwt = Jwts.builder()
@@ -37,6 +47,7 @@ public class JwtTokenGeneratorFilter extends OncePerRequestFilter {
                          .setIssuedAt(new Date())
                          .claim("authorities", populateAuthorities(authentication.getAuthorities()))
                          .claim("username", authentication.getName())
+                         .claim("userId", user.getId())
                          .setExpiration(new Date(new Date().getTime() +300000000))
                          .signWith(key).compact();
 

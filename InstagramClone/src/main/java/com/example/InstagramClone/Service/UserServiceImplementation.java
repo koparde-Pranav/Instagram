@@ -69,6 +69,10 @@ public class UserServiceImplementation implements UserService {
     public User findUserProfile(String token) throws UserException {
         token = token.substring(7);
         JwtTokenClaims jwtTokenClaims = jwtTokenProvider.getClaimsFromToken(token);
+        if (jwtTokenClaims.getUserId() != null) {
+            return findUserById(jwtTokenClaims.getUserId());
+        }
+
         String username = jwtTokenClaims.getUsername();
         Optional<User> opt = userRepository.findByUsername(username);
         if (opt.isPresent()) {
@@ -193,7 +197,7 @@ public class UserServiceImplementation implements UserService {
         if (updatedUser.getImage() != null) {
             existingUser.setImage(updatedUser.getImage());
         }
-        if (updatedUser.getId() == existingUser.getId()) {
+        if (updatedUser.getId().equals(existingUser.getId())) {
             return userRepository.save(existingUser);
         } else {
             throw new UserException("You cant update this user profile");

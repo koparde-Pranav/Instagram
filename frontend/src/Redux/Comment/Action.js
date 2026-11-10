@@ -1,4 +1,5 @@
-import { CREATE_COMMENT, GET_POST_COMMENTS } from "./ActionType";
+import { CREATE_COMMENT, GET_POST_COMMENT } from "./ActionType";
+import { LIKE_COMMENT, UNLIKE_COMMENT } from "./ActionType";
 
 
 const BASE_API = "http://localhost:5454/api";
@@ -11,10 +12,11 @@ export const createCommentAction = (data) => async (dispatch) => {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + data.jwt
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data.data)
         });
 
         const comment = await response.json();
+        console.log("comment", comment);
         dispatch({ type: CREATE_COMMENT, payload: comment });
     } catch (error) {
         console.log("catch", error);
@@ -32,7 +34,8 @@ export const findPostCommentAction = (data) => async (dispatch) => {
         });
 
         const comment = await response.json();
-        dispatch({ type: GET_POST_COMMENTS, payload: comment });
+        console.log("comment", comment);
+        dispatch({ type: GET_POST_COMMENT, payload: comment });
     } catch (error) {
         console.log("catch", error);
     }
@@ -49,6 +52,7 @@ export const likeCommentAction = (data) => async (dispatch) => {
         });
 
         const comment = await response.json();
+        console.log("comment", comment);
         dispatch({ type: LIKE_COMMENT, payload: comment });
     } catch (error) {
         console.log("catch", error);
@@ -66,6 +70,7 @@ export const unlikeCommentAction = (data) => async (dispatch) => {
         });
 
         const comment = await response.json();
+        console.log("comment", comment);
         dispatch({ type: UNLIKE_COMMENT, payload: comment });
     } catch (error) {
         console.log("catch", error);

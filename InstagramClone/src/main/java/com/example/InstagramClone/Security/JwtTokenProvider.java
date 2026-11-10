@@ -20,9 +20,12 @@ public class JwtTokenProvider {
         Claims claims = Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
         
         String username = String.valueOf(claims.get("username"));
+        Object userIdClaim = claims.get("userId");
+        Integer userId = userIdClaim instanceof Number ? ((Number) userIdClaim).intValue() : null;
 
         JwtTokenClaims jwtTokenClaims = new JwtTokenClaims();
         jwtTokenClaims.setUsername(username);
+        jwtTokenClaims.setUserId(userId);
 
         return jwtTokenClaims ;
     }

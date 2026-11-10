@@ -1,20 +1,53 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { AiOutlineSearch } from 'react-icons/ai'
+import { useDispatch, useSelector } from 'react-redux'
 import "./SearchComponents.css";
 import SearchUserCard from './SearchUserCard';
+import { searchUserAction } from '../../Redux/User/Action';
 
 const SearchComponents = () => {
+    const [isFocused, setIsFocused] = useState(false);
+    const dispatch = useDispatch();
+    const { searchUser } = useSelector((store) => store.user);
+
+    const handleSearchFocus = () => {
+        if (isFocused) return;
+
+        setIsFocused(true);
+        dispatch(searchUserAction({
+            query: '',
+            jwt: localStorage.getItem('token')
+        }));
+    };
+
     return (
         <div className='searchContainer'>
-            <div className='px-3 pb-5'>
-                <h1 className='text-xl pb-5'>search</h1>
-                <input className='searchInput' type="text" placeholder="Search..." />
-            </div>
+            <div className='searchContent'>
+                <div className='searchInputContainer'>
+                    <AiOutlineSearch className='searchInputIcon' aria-hidden='true' />
+                    <input
+                        className='searchInput'
+                        onFocus={handleSearchFocus}
+                        type='text'
+                        placeholder='Search...'
+                        aria-label='Search users'
+                    />
+                </div>
 
-            <hr />
-            <div className='px-3 pt-5'>
-                {[1, 1, 1, 1, 1, 1].map((item, index) => <SearchUserCard />)}
+                {isFocused && (
+                    <div className='searchResults'>
+                        {Array.isArray(searchUser) && searchUser.length > 0 ? (
+                            searchUser.map((foundUser) => (
+                                <SearchUserCard key={foundUser.id} user={foundUser} />
+                            ))
+                        ) : searchUser ? (
+                            <p className='searchEmptyState'>No users found.</p>
+                        ) : (
+                            <p className='searchEmptyState'>Loading users...</p>
+                        )}
+                    </div>
+                )}
             </div>
-
         </div>
     )
 }
