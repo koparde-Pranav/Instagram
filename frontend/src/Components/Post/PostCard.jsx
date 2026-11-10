@@ -11,16 +11,27 @@ import { likePostAction, unlikePostAction, savePostAction, unsavePostAction } fr
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { isPostLikedByUser, isPostSavedByUser } from '../../Config/Logic';
+import { useNavigate } from 'react-router-dom';
 
 const PostCard = ({ post }) => {
     const [showDropDown, setShowDropDown] = useState(false);
+    const dropdownItems = [
+        "Report",
+        "Not interested",
+        "About this account",
+        "Go to post",
+        "Share to...",
+        "Copy link",
+        "Embed",
+    ];
     const [isPostLiked, setIsPostLiked] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const dispatch = useDispatch();
     const token = localStorage.getItem('token');
-    const data = {jwt: token, postId: post.id}
-    const {user} = useSelector((store) => store);
+    const data = { jwt: token, postId: post.id }
+    const { user } = useSelector((store) => store);
+    const navigate = useNavigate();
 
     const handleClick = () => {
         setShowDropDown(!showDropDown);
@@ -42,30 +53,43 @@ const PostCard = ({ post }) => {
         dispatch(unsavePostAction(data));
     }
     const handleOpenCommentModal = () => {
+        navigate(`/comment/${post.id}`);
         onOpen();
     }
 
     useEffect(() => {
         setIsPostLiked(isPostLikedByUser(post, user.reqUser.id));
         setIsSaved(isPostSavedByUser(user.reqUser, post.id));
-    },[post.likedByUsers, user.reqUser])
+    }, [post.likedByUsers, user.reqUser])
 
     return (
         <div>
             <div className='border rounded-md w-full'>
                 <div className='flex justify-between items-center w-full py-4 px-5'>
                     <div className='flex items-center'>
-                        <img className='h-12 w-12 rounded-full' src='https://images.bigbadtoystore.com/images/p/full/2021/10/49152b5e-6ad5-4fd1-b93a-0aac0880bacf.jpg' alt=''></img>
+                        <img className='h-12 w-12 rounded-full' src={post.user.userImage || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREPkqRyA7fZJ_m0ayr-M10p4p50J6f2HudK5B14xe-pw&s'} alt=''></img>
 
                         <div className='pl-2'>
-                            <p className='font-semibold text-sm '>username</p>
-                            <p className='font-thin text-sm'>location</p>
+                            <p className='font-semibold text-sm '>{post.user.username}</p>
+                            <p className='font-thin text-sm'>{post.location}</p>
                         </div>
+                    </div>
+                    <div className= '-mr-[155px]'>
+                        <p className='text-blue-700 font-semibold'>Follow</p>
                     </div>
                     <div className='dropdown'>
                         <BsThreeDots className='dots' onClick={handleClick}></BsThreeDots>
                         <div className='dropdown-content'>
-                            {showDropDown && <p className='bg-black text-white py-1 px-4 rounded-md cursor-pointer'>Delete</p>}
+                            {showDropDown && dropdownItems.map((item) => (
+                                <button
+                                    key={item}
+                                    type='button'
+                                    className={`dropdown-item ${item === "Report" ? "text-red-600" : ""}`}
+                                    onClick={() => setShowDropDown(false)}
+                                >
+                                    {item}
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -89,7 +113,7 @@ const PostCard = ({ post }) => {
 
                 <div className='w-full py-2 px-5'>
                     {post?.likedByUsers?.length > 0 && <p>{post?.likedByUsers?.length} likes</p>}
-                    {post?.comments?.length > 0 && <p className='opacity-50 py-2 cursor-pointer'>view all {post?.comments?.length} comments</p>}
+                    {post?.comment?.length > 0 && <p className='opacity-50 py-2 cursor-pointer'>view all {post.comment.length} comments</p>}
                 </div>
                 <div className='border border-t-w-full'>
                     <div className='flex w-full items-center px-5 '>

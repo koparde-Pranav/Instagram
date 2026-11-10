@@ -1,6 +1,6 @@
 const initialValue = {
     createdComment: null,
-    psotComment : null,
+    postComment : null,
     likeComment : null,
     unlikeComment : null
 }

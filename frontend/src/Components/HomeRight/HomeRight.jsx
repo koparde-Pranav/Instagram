@@ -19,8 +19,18 @@ const HomeRight = () => {
             <p className='text-blue-700 font-semibold'>Switch</p>
           </div>
         </div>
-        <div className='space-y-5 mt-10'>
+        <div>
+          <div className='flex justify-between items-center mt-10'>
+            <p className='opacity-70'>Suggested For You</p>
+            <p className='text-blue-700 font-semibold'>See All</p>
+          </div>
+          
+        </div>
+        <div className='space-y-5 mt-4'>
           {[0, 1, 2, 3].map((index) => <SuggestionCard key={index}></SuggestionCard>)}
+        </div>
+        <div className='mt-10 opacity-70 space-y-2'>
+          <p>© 2026 Instagram from Meta</p>
         </div>
       </div>
     </div>
